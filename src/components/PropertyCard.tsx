@@ -20,6 +20,8 @@ export interface Property {
   images: string[];
   isForSale: boolean;
   isForRent: boolean;
+  description?: string;
+  features?: string[];
 }
 
 interface PropertyCardProps {
