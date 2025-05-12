@@ -59,7 +59,7 @@ const PropertiesPage: React.FC = () => {
           <p className="text-gray-500">{filteredProperties.length} properties found</p>
         </div>
         
-        <Tabs defaultValue="list" value={activeView} onValueChange={(value: string) => setActiveView(value as "list" | "map")} className="w-[200px]">
+        <Tabs value={activeView} onValueChange={(value: string) => setActiveView(value as "list" | "map")} className="w-[200px]">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="list" className="flex items-center">
               <List className="h-4 w-4 mr-2" /> List
@@ -68,35 +68,35 @@ const PropertiesPage: React.FC = () => {
               <MapPin className="h-4 w-4 mr-2" /> Map
             </TabsTrigger>
           </TabsList>
+          
+          <TabsContent value="list">
+            {filteredProperties.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredProperties.map((property) => (
+                  <PropertyCard key={property.id} property={property} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-gray-50 rounded-lg">
+                <p className="text-gray-500 text-lg">No properties match your current filters.</p>
+                <Button 
+                  variant="outline"
+                  className="mt-4"
+                  onClick={() => setFilteredProperties(properties)}
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="map">
+            <div className="h-[600px] rounded-lg overflow-hidden">
+              <PropertyMap />
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
-      
-      <TabsContent value="list" className={activeView === "list" ? "block" : "hidden"}>
-        {filteredProperties.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProperties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <p className="text-gray-500 text-lg">No properties match your current filters.</p>
-            <Button 
-              variant="outline"
-              className="mt-4"
-              onClick={() => setFilteredProperties(properties)}
-            >
-              Clear Filters
-            </Button>
-          </div>
-        )}
-      </TabsContent>
-      
-      <TabsContent value="map" className={activeView === "map" ? "block" : "hidden"}>
-        <div className="h-[600px] rounded-lg overflow-hidden">
-          <PropertyMap />
-        </div>
-      </TabsContent>
     </div>
   );
 };
