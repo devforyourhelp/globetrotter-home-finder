@@ -1,9 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Home, Maximize2, ArrowRightLeft, Bath, BedDouble, ImageIcon } from 'lucide-react';
+import { MapPin, Home, Maximize2, ArrowRightLeft, Bath, BedDouble, ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export interface Property {
@@ -30,6 +30,8 @@ interface PropertyCardProps {
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
   // Format price with commas and currency symbol
   const formatPrice = (price: number, currency: string) => {
     let symbol = '$';
@@ -40,17 +42,58 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
     return `${symbol}${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
   };
 
+  const nextImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === Math.min(property.images.length - 1, 4) ? 0 : prevIndex + 1
+    );
+  };
+
+  const prevImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? Math.min(property.images.length - 1, 4) : prevIndex - 1
+    );
+  };
+
+  const imageCount = Math.min(property.images.length, 5);
+
   return (
     <Card className="property-card overflow-hidden h-full flex flex-col hover:shadow-lg transition-all duration-300 border-gray-200">
       <div className="relative">
         <AspectRatio ratio={16 / 9} className="bg-muted">
           {property.images && property.images.length > 0 ? (
-            <img
-              src={property.images[0]}
-              alt={property.title}
-              className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
-              loading="lazy"
-            />
+            <>
+              <img
+                src={property.images[currentImageIndex]}
+                alt={property.title}
+                className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+                loading="lazy"
+              />
+              {imageCount > 1 && (
+                <div className="absolute inset-0 flex justify-between items-center px-2">
+                  <button 
+                    onClick={prevImage}
+                    className="bg-black/30 text-white p-1 rounded-full hover:bg-black/50 transition-colors"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  <button 
+                    onClick={nextImage}
+                    className="bg-black/30 text-white p-1 rounded-full hover:bg-black/50 transition-colors"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
+              )}
+              <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
+                {currentImageIndex + 1}/{imageCount}
+              </div>
+            </>
           ) : (
             <div className="flex items-center justify-center h-full bg-gray-100">
               <ImageIcon className="h-10 w-10 text-gray-400" />
