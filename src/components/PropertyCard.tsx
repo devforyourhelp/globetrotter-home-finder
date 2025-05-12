@@ -3,7 +3,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Home, Maximize2, ArrowRightLeft, Bath, BedDouble } from 'lucide-react';
+import { MapPin, Home, Maximize2, ArrowRightLeft, Bath, BedDouble, ImageIcon } from 'lucide-react';
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export interface Property {
   id: string;
@@ -40,13 +41,22 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   };
 
   return (
-    <Card className="property-card overflow-hidden h-full flex flex-col">
+    <Card className="property-card overflow-hidden h-full flex flex-col hover:shadow-lg transition-all duration-300 border-gray-200">
       <div className="relative">
-        <img
-          src={property.images[0]}
-          alt={property.title}
-          className="h-60 w-full object-cover"
-        />
+        <AspectRatio ratio={16 / 9} className="bg-muted">
+          {property.images && property.images.length > 0 ? (
+            <img
+              src={property.images[0]}
+              alt={property.title}
+              className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full bg-gray-100">
+              <ImageIcon className="h-10 w-10 text-gray-400" />
+            </div>
+          )}
+        </AspectRatio>
         <div className="absolute top-4 left-4 flex flex-wrap gap-2">
           {property.isForSale && (
             <Badge className="bg-estate-600 hover:bg-estate-700">For Sale</Badge>
@@ -54,20 +64,22 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           {property.isForRent && (
             <Badge className="bg-amber-600 hover:bg-amber-700">For Rent</Badge>
           )}
-          <Badge variant="outline" className="bg-white/70 text-gray-800 hover:bg-white">
+          <Badge variant="outline" className="bg-white/90 text-gray-800 hover:bg-white backdrop-blur-sm">
             {property.type}
+          </Badge>
+        </div>
+        <div className="absolute bottom-4 right-4">
+          <Badge className="bg-estate-600/90 text-white backdrop-blur-sm font-bold text-md hover:bg-estate-700">
+            {formatPrice(property.price, property.currency)}
           </Badge>
         </div>
       </div>
       
       <CardContent className="pt-6 flex-grow">
-        <div className="flex items-start justify-between">
-          <h3 className="font-semibold text-lg mb-1 line-clamp-1">{property.title}</h3>
-          <p className="font-bold text-estate-600">{formatPrice(property.price, property.currency)}</p>
-        </div>
+        <h3 className="font-semibold text-lg mb-2 text-estate-800 hover:text-estate-600 transition-colors line-clamp-2">{property.title}</h3>
         
         <div className="flex items-center text-gray-500 mb-4">
-          <MapPin className="h-4 w-4 mr-1" />
+          <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
           <span className="text-sm line-clamp-1">{property.location}, {property.country}</span>
         </div>
         
@@ -91,7 +103,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
         <div className="w-full flex items-center justify-between">
           <Link 
             to={`/properties/${property.id}`}
-            className="text-estate-600 hover:text-estate-800 font-medium text-sm"
+            className="text-estate-600 hover:text-estate-800 font-medium text-sm flex items-center"
           >
             View Details
           </Link>
